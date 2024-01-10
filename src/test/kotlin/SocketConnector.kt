@@ -1,12 +1,19 @@
 package org.nanking
 
+import kotlinx.coroutines.*
 import org.http4k.core.Method
 import org.http4k.core.Request
 import java.net.Socket
 import kotlin.test.Test
 
 class SocketConnector {
-    val bodyString = "what is your name:"
+
+    companion object {
+        private const val HOST = "127.0.0.1"
+        private const val PORT = 8080
+        private const val URL_PATH = "/examples/servlets/servlet/SocketConnectExample"
+        private const val BODY_CONTENT = "what is your name:"
+    }
 
     @Test
     fun socketConnect() {
@@ -24,11 +31,12 @@ class SocketConnector {
 
     @OptIn(ExperimentalStdlibApi::class)
     fun socketConnectByName(name: String) {
-        val msgContent = bodyString + name;
-        val socket = Socket("127.0.0.1", 8080)
-        val request = Request(Method.POST, "/examples/servlets/servlet/SocketConnectExample")
+        val msgContent = BODY_CONTENT + name;
+        val socket =
+            Socket(HOST, PORT)
+        val request = Request(Method.POST, URL_PATH)
             .header("user-agent", "Thunder Client (https://www.thunderclient.com)")
-            .header("Host", "127.0.0.1:8080")
+            .header("Host", "$HOST:$PORT")
             .header("content-type", "text/plain")
             .header("Transfer-Encoding", "chunked")
 
@@ -48,7 +56,7 @@ class SocketConnector {
             outputStream.flush()
         }.start()
         while(true) {
-            val b = ByteArray(128)
+            val b = ByteArray(256)
             val readLen = inputStream.read(b)
             if (readLen <= 0) {
                 println("breaked")
