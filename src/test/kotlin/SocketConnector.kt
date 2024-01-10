@@ -16,6 +16,29 @@ class SocketConnector {
     }
 
     @Test
+    fun coroutinesTest() {
+        runBlocking {
+            doWork()
+            println("Done")
+        }
+    }
+
+    private suspend fun doWork() = runBlocking {
+        launch {
+            delay(2000)
+            println("World 2")
+        }
+        launch {
+            delay(1000)
+            println("World 1")
+        }
+        println("Hello")
+    }
+
+
+
+
+    @Test
     fun socketConnect() {
         val thread1 = Thread {
             socketConnectByName("user1")
