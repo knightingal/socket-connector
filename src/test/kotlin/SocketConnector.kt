@@ -40,14 +40,12 @@ class SocketConnector {
 
     @Test
     fun socketConnect() {
-        val thread1 = Thread {
+        val thread1 = Thread.ofVirtual().start {
             socketConnectByName("user1")
         }
-        val thread2 = Thread {
+        val thread2 = Thread.ofVirtual().start {
             socketConnectByName("user2")
         }
-        thread1.start()
-        thread2.start()
         thread1.join()
         thread2.join()
     }
@@ -68,7 +66,7 @@ class SocketConnector {
         val outputStream = socket.getOutputStream()
         val requestMessage = request.toMessage()
         outputStream.write(requestMessage.toByteArray())
-        Thread {
+        Thread.ofVirtual().start {
             for (i in 1..3) {
                 outputStream.write("${msgContent.length.toHexString()}\r\n".toByteArray())
                 outputStream.write("$msgContent\r\n".toByteArray())
@@ -77,7 +75,7 @@ class SocketConnector {
             }
             outputStream.write("0\r\n\r\n".toByteArray())
             outputStream.flush()
-        }.start()
+        }
         while(true) {
             val b = ByteArray(256)
             val readLen = inputStream.read(b)
